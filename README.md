@@ -52,12 +52,6 @@ This project was originally created for a nonprofit organization to reduce costs
 
 ---
 
-## 📝 License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
----
-
 ## 🤝 Contributing
 
 Contributions, bug reports, and suggestions are welcome! Feel free to fork this project and submit pull requests.
