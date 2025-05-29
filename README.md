@@ -52,12 +52,6 @@ This project was originally created for a nonprofit organization to reduce costs
 
 ---
 
-## 📸 Screenshots
-
-*(Add screenshots or GIFs here to show the user experience.)*
-
----
-
 ## 📝 License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
