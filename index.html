@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Riverbank Wine and Cheese Car Show Registration Form</title>
+</head>
+<body>
+    <main>
+        <header>
+            <h1>Riverbank Wine and Cheese Car Show Registration Form</h1>
+        </header>
+        <form id="registrationForm">
+                    <input type="text" name="fname" id="fname" placeholder="First Name:" required>
+                    <input type="text" name="lname" id="lname" placeholder="Last Name:" required>
+                    <input type="email" name="email" id="email" placeholder="Email:" required>
+                    <input type="email" name="confirmEmail" id="confirmEmail" placeholder="Confirm Email Above:" required>
+                    <input type="tel" name="phone" id="phone" placeholder="Phone:" required>
+                    <input type="text" name="street" id="street" placeholder="Street">
+                    <input type="text" name="city" id="city" placeholder="City">
+                    <input type="text" name="state" id="state" placeholder="State">
+                    <input type="number" name="zip" id="zip" placeholder="Zip">
+                    <input type="text" name="vmake" id="vmake" placeholder="Vehicle Make:" required>
+                    <input type="text" name="vmodel" id="vmodel" placeholder="Vehicle Model:" required>
+                    <input type="number" name="vyear" id="vyear" placeholder="Vehicle Year:" required>
+                </form>
+        <!-- Line to dynamically display paypal payment buttons -->
+        <div id="paypal-button-container"></div>
+    </main>
+</body>
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID"></script>
+<script>
+    // saves form data to local storage for processing after payment
+    function saveFormData(){
+        const form = document.getElementById("registrationForm");
+        const data = Object.fromEntries(new FormData(form).entries());
+        localStorage.setItem("data", JSON.stringify(data));
+        return data;
+    }
+
+    // loads paypal button
+    paypal.Buttons({
+        createOrder: function(data, actions){
+            // save form data before payment
+            saveFormData();
+            return actions.order.create({
+                purchase_units: [{amount: {value: 'FLOAT_VALUE_FORM_PAYMENT_COST'} }]
+            });
+        },
+        onApprove: function(data, actions){
+            return actions.order.capture().then(function(details){
+                const formData = JSON.parse(localStorage.getItem("data"));
+                formData.transactionid = details.id;
+                console.log(data);
+                // send form data to google sheets app script
+                const formBody = new URLSearchParams(formData).toString();
+                fetch("WEB_APP_SCRIPT_URL", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: formBody
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log("Success: ", data);
+                  })
+                  .catch(err => {
+                    console.error("Fetch error: ", err);
+                });
+            });
+        }
+    }).render('#paypal-button-container');
+    </script>
+</html>
+
+<style>
+    form {
+        display: grid;
+        grid-template-columns: repeat(1fr, 2);
+        grid-gap: 25px;
+    }
+    input {
+        padding: 20px;
+    }
+</style>
